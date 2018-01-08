@@ -31,6 +31,28 @@ class ProgressLogo @JvmOverloads constructor(context: Context,
     private val measure = PathMeasure()
     lateinit private var objectAnimator: ObjectAnimator
 
+    private fun measureDimension(desiredSize: Int, measureSpec: Int): Int {
+        var result: Int
+        val specMode = MeasureSpec.getMode(measureSpec)
+        val specSize = MeasureSpec.getSize(measureSpec)
+        if (specMode == MeasureSpec.EXACTLY) {
+            result = specSize
+        } else {
+            // capture MeasureSpec.UNSPECIFIED case
+            result = desiredSize
+            if (specMode == MeasureSpec.AT_MOST) {
+                result = Math.min(specSize, result)
+            }
+        }
+        return result
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val desiredWidth = suggestedMinimumWidth + paddingLeft + paddingRight
+        val desiredHeight = suggestedMinimumHeight + paddingTop + paddingBottom
+        setMeasuredDimension(measureDimension(desiredWidth, widthMeasureSpec), measureDimension(desiredHeight, heightMeasureSpec))
+    }
+
     override fun onDraw(canvas: Canvas?) {
         canvas?.drawPath(segment, paint)
     }
